@@ -472,11 +472,13 @@
 
     <!--  Definition of the readout segmentation/definition  -->
     <readouts>
-        <readout name="VertexBarrelCollection">
-            <id>${GlobalTrackerReadoutID}</id>
+        <readout name="VertexBarrelCollection"> 
+            <segmentation type="CartesianGridYZ" key="layer" name="ARCADIA" grid_size_y="0.025*mm" grid_size_z="0.025*mm"/>
+            <id>${GlobalTrackerReadoutID},y:32:-16,z:-16</id>
         </readout>  
         <readout name="VertexEndcapCollection">
-            <id>${GlobalTrackerReadoutID}</id>
+            <segmentation type="CartesianGridXY" key="layer" name="ARCADIA" grid_size_x="0.025*mm" grid_size_y="0.025*mm"/>
+            <id>${GlobalTrackerReadoutID},y:32:-16,z:-16</id>
         </readout>
         <readout name="VertexDummyCollection">    <!-- For disk supports, should not have any hits but better safe than sorry -->
             <id>${GlobalTrackerReadoutID}</id>
