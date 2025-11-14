@@ -477,8 +477,8 @@
             <id>${GlobalTrackerReadoutID},y:32:-16,z:-16</id>
         </readout>  
         <readout name="VertexEndcapCollection">
-            <segmentation type="CartesianGridXY" key="layer" name="ARCADIA" grid_size_x="0.025*mm" grid_size_y="0.025*mm"/>
-            <id>${GlobalTrackerReadoutID},y:32:-16,z:-16</id>
+            <segmentation type="CartesianGridXY" key="layer" name="ATLASPIX3" grid_size_x="0.050*mm" grid_size_y="0.150*mm"/> <!-- TODO: check x/y orientation. Smaller pitch should be in phi-direction ~ Jona, 2025-11 -->
+            <id>${GlobalTrackerReadoutID},x:32:-16,y:-16</id>
         </readout>
         <readout name="VertexDummyCollection">    <!-- For disk supports, should not have any hits but better safe than sorry -->
             <id>${GlobalTrackerReadoutID}</id>
