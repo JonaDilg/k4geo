@@ -473,7 +473,7 @@
     <!--  Definition of the readout segmentation/definition  -->
     <readouts>
         <readout name="VertexBarrelCollection"> 
-            <segmentation type="CartesianGridYZ" key="layer" name="ARCADIA" grid_size_y="0.025*mm" grid_size_z="0.025*mm"/>
+            <segmentation type="CartesianGridYZ" key="layer" name="ARCADIA" grid_size_y="0.02*mm" grid_size_z="0.02*mm"/>
             <id>${GlobalTrackerReadoutID},y:32:-16,z:-16</id>
         </readout>  
         <readout name="VertexEndcapCollection">
