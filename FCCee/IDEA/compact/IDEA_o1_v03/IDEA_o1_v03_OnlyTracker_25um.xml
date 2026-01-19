@@ -46,7 +46,7 @@
   <include ref="LumiCal_o1_v01.xml"/>
 
   <!-- Import vertex -->
-  <include ref="VertexComplete_IDEA_o1_v03.xml"/>
+  <include ref="VertexComplete_IDEA_o1_v03_25um.xml"/>
 
   <!-- Import drift chamber -->
   <include ref="DriftChamber_o1_v02.xml"/>
