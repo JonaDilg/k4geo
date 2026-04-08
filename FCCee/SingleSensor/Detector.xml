@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+	<info name="SingleSensorDetectorModel"
+		version="0.1"
+		title="Single sensor detector model for VTX digitisation testing"
+		author="Jona Dilg"
+		url="no"
+		status="development">
+		<comment>
+		Version 0.1 of the single sensor detector model for VTX digitisation testing
+		</comment>
+	</info>
+
+	<include ref="${DD4hepINSTALL}/DDDetectors/compact/detector_types.xml" />
+
+	<includes>
+		<gdmlFile  ref="elements_o1_v01.xml"/>
+		<gdmlFile  ref="materials_o1_v03.xml"/>
+	</includes>
+
+	<define>
+		<constant name="world_size" value="0.1*m"/>
+		<constant name="world_x" value="world_size"/>
+		<constant name="world_y" value="world_size"/>
+		<constant name="world_z" value="world_size"/>
+	</define>
+
+	<include ref="VertexComplete_IDEA_o1_v03.xml"/>
+
+	<plugins>
+		<plugin name="DD4hepVolumeManager"/>
+		<plugin name="InstallSurfaceManager"/>
+	</plugins>
+
+</lccdd>

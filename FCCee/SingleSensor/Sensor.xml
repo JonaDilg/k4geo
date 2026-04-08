@@ -1,0 +1,68 @@
+<lccdd>
+	
+	<info name="SingleSensorDetector"
+		version="0.1"
+		title="Single sensor detector for VTX digitisation testing"
+		author="Jona Dilg"
+		url="no"
+		status="development">
+		<comment>
+		Version 0.1 of the single sensor detector for VTX digitisation testing
+		</comment>
+	</info>
+
+	<display>
+		<vis name="SensorVis"
+			alpha="1.0"
+			r="1.0"
+			g="1.0"
+			b="0.0"
+			visible="true"
+		/>
+	</display>
+
+	<define>
+		<!-- Sensor dimensions -->
+		<constant name="SensorSize_u" value="1.2*mm"/>
+		<constant name="SensorSize_v" value="1.2*mm"/>
+		<constant name="SensorThickness" value="0.05*mm"/>
+
+		<!-- Module with a single sensor -->
+		<constant name="ModuleSize_u" value="10.0*mm"/>
+		<constant name="ModuleSize_v" value="10.0*mm"/>
+		<constant name="ModuleThickness" value="5.0*mm"/>
+
+		
+
+	<readouts>
+		<readout name="SensorReadout"> 
+			<segmentation type="CartesianGridYZ" key="layer" 
+				name="ARCADIA" 
+				grid_size_y="0.02*mm" 
+				grid_size_z="0.02*mm"/>
+			<id>${GlobalTrackerReadoutID},y:32:-16,z:-16</id>
+		</readout>
+	</readouts>
+
+	<detectors>
+		<detector name="SingleSensorDetector"
+			type="DD4hep_SubdetectorAssembly"
+			vis="SensorVis"
+			id="1"
+			readout="SensorReadout"
+			region="Tracker"/>
+
+		<stave name="Stave" length="0.1*m"/> 
+
+			<sensor name="MapsSensor" 
+				length="0.1*m" 
+				width="0.1*m"
+				thickness="0.02*mm"
+				material="Silicon"/>
+
+
+
+
+		</detector>
+	</detectors>
+</lccdd>    
