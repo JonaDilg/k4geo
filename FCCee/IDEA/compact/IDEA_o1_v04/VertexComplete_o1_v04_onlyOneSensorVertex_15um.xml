@@ -48,8 +48,8 @@
     </detectors>
 
     <define> <comment> Vertex inner barrel (VTXIB) properties </comment>
-        <constant name="VTXIB_pitch_z"      value="0.025*mm"/>
-        <constant name="VTXIB_pitch_phi"    value="0.025*mm"/>
+        <constant name="VTXIB_pitch_z"      value="0.015*mm"/>
+        <constant name="VTXIB_pitch_phi"    value="0.015*mm"/>
 
         <constant name="VTXIB_sensor_z" value="1000.*VTXIB_pitch_z"/>
         <constant name="VTXIB_sensor_rphi" value="1000.*VTXIB_pitch_phi"/>
