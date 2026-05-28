@@ -60,24 +60,6 @@ namespace DDSegmentation {
      */
     virtual void neighbours(const CellID& cellID, std::set<CellID>& neighbours) const override;
 
-    /**  Calculate layer radii and edges in z-axis, then define cell edges in each layer using defineCellEdges().
-     *    Following member variables are calculated:
-     *      m_radii
-     *      m_layerEdges
-     *      m_layerDepth
-     *      m_thetaBins (updated through defineCellEdges())
-     *      m_cellEdges (updated through defineCellEdges())
-     */
-    void defineCellsInRZplan() const;
-
-    /**  Define cell edges in z-axis for the given layer.
-     *   Logic:
-     *      1) Find theta bin centers that fit within the given layer;
-     *      2) Define a cell edge in z-axis as the middle of each pair of theta bin centers
-     *   @param[in] layer index
-     */
-    void defineCellEdges(const unsigned int layer) const;
-
     /**  Determine the azimuthal angle of HCal cell based on the cellID.
      *   @param[in] aCellID ID of a cell.
      *   return Phi.
@@ -101,7 +83,7 @@ namespace DDSegmentation {
 
     /**  Get the vector of theta bins (cells) in a given layer.
      */
-    inline std::vector<int> thetaBins(const uint layer) const {
+    inline const std::vector<int>& thetaBins(const uint layer) const {
       const LayerInfo& li = getLayerInfo(layer);
       return li.thetaBins;
     }
@@ -147,6 +129,12 @@ namespace DDSegmentation {
      *   return The field name for layer.
      */
     inline const std::string& fieldNameLayer() const { return m_layerID; }
+
+    /**  Get the layer for a cell given cell ID
+     *   @param[in] aCellID the cell ID
+     *   return The layer number
+     */
+    inline int layer(const CellID aCellID) const { return _decoder->get(aCellID, fieldNameLayer()); }
 
     /**  Determine the minimum and maximum polar angle of HCal cell based on the cellID.
      *   @param[in] cID ID of a cell.
@@ -204,13 +192,31 @@ namespace DDSegmentation {
      */
     inline void setFieldNamePhi(const std::string& fieldName) { m_phiID = fieldName; }
 
-    /** Returns a std::vector<double> of the cellDimensions of the given cell ID
-     *  in natural order of dimensions (phi, theta)
-     *  @param[in] cellID
-     *  return a std::vector of size 2 with the cellDimensions of the given cell ID (phi, theta)
+    /** Returns a std::vector<double> of the cellDimensions of the given cell ID as required by PandoraPFA
+     *  cellSize0: cell size along the z-axis
+     *  cellSize1: cell size along the axis perpendicular to cellSize0 and thickness
+     *  If the cellID is zero then it returns the cell dimensions in phi and theta
+     *  @param[in] cID
+     *  return a std::vector of size 2 with the cellDimensions of the given cell ID (cellSize0, cellSize1)
      */
-    virtual std::vector<double> cellDimensions(const CellID& /* id */) const override {
-      return {gridSizePhi(), gridSizeTheta()};
+    virtual std::vector<double> cellDimensions(const CellID& cID) const override {
+      // if the cellID is not provided then return the cell dimensions in phi and theta
+      if (cID == 0)
+        return {gridSizePhi(), gridSizeTheta()};
+
+      float cellSize0 = 0.;
+      float cellSize1 = 0.;
+
+      const int layerID = layer(cID);
+      const int thetaID = decoder()->get(cID, m_thetaIndex);
+
+      const LayerInfo& li = getLayerInfo(layerID);
+      const LayerInfo::Edge& edge = li.cellInfo(thetaID).edge;
+
+      cellSize0 = fabs(edge.high - edge.low);
+      cellSize1 = 2. * li.radius * std::sin(gridSizePhi() / 2.);
+
+      return {cellSize0, cellSize1};
     }
 
   private:
@@ -265,8 +271,45 @@ namespace DDSegmentation {
       /// theta bins (cells) in the layer
       std::vector<int> thetaBins{};
 
-      /// z-min and z-max of each cell (theta bin) in each layer
-      std::unordered_map<int, std::pair<double, double>> cellEdges{};
+      /// Information about each theta bin in the layer: z-min and z-max
+      // For the barrel, we store this in the m_cellInfo1 vector;
+      // the first entry of the vector corresponds to bin number m_ibin1.
+      // For the endcap, we have two disjoint bin ranges, corresponding
+      // to the positive and negative endcaps.  In that case, the two
+      // ranges are stored in m_cellInfo1 and m_cellInfo2; m_ibin1
+      // gives the bin number of the first entry of m_cellInfo1 and
+      // m_ibin2 gives the bin number of the first entry of m_cellInfo2.
+      // To access the information, use the cellInfo() functions,
+      // which handle the lookup by bin number, throwing std::out_of_range
+      // for a nonexistent bin.
+      struct Edge {
+        double low;
+        double high;
+      };
+      int m_ibin1 = 0;
+      int m_ibin2 = 9999999;
+
+      struct CellInfo {
+        CellInfo(double lo, double hi) : edge{lo, hi} {}
+        Edge edge{0, 0};
+      };
+      std::vector<CellInfo> m_cellInfo1{};
+      std::vector<CellInfo> m_cellInfo2{};
+
+      const CellInfo& cellInfo(int ibin) const {
+        if (ibin < m_ibin1)
+          throw std::out_of_range("cellInfo");
+        if (ibin < m_ibin2)
+          return m_cellInfo1.at(ibin - m_ibin1);
+        return m_cellInfo2.at(ibin - m_ibin2);
+      }
+      CellInfo& cellInfo(int ibin) {
+        if (ibin < m_ibin1)
+          throw std::out_of_range("cellInfo");
+        if (ibin < m_ibin2)
+          return m_cellInfo1.at(ibin - m_ibin1);
+        return m_cellInfo2.at(ibin - m_ibin2);
+      }
     };
 
     // The vector of tabulated values, indexed by layer number.
@@ -279,7 +322,6 @@ namespace DDSegmentation {
     const LayerInfo& getLayerInfo(const unsigned layer) const;
 
     /**  Construct the derived geometrical information.
-     *xxx
      * Calculate layer radii and edges in z-axis, then define cell edges in each layer using defineCellEdges().
      *    Following member variables are calculated:
      *      radius
