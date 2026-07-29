@@ -256,7 +256,7 @@
   </limits>
   <regions>
     <region name="BeampipeRegion"/>
-    <region name="VTXBRegion" lunit="mm" cut="0.005"/> <!-- 5 µm range cut to properly model thin silicon sensors -->
+    <region name="VTXBRegion" lunit="mm" cut="0.005" eunit="MeV" threshold="0."/> <!-- 5 µm range cut to properly model thin silicon sensors -->
     <region name="VTXDRegion"/>
 
     <region name="SiWrBRegion"/>
